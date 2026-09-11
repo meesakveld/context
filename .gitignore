@@ -30,3 +30,6 @@ context.txt
 *.exe
 *.test
 *.out
+
+# GoReleaser
+/dist/
