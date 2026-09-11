@@ -1,7 +1,7 @@
 package version
 
-const current = "1.0.0"
+var Current = "dev"
 
 func String() string {
-	return "context v" + current
+	return "context v" + Current
 }
