@@ -23,14 +23,28 @@ func main() {
 		os.Exit(1)
 	}
 
+	flag.Usage = printHelp
+
 	outputPath := flag.String(
 		"o",
 		cfg.Output,
 		"output file path",
 	)
 
+	outputPathLong := flag.String(
+		"output",
+		cfg.Output,
+		"output file path",
+	)
+
 	clipboard := flag.Bool(
 		"clipboard",
+		false,
+		"copy context to clipboard",
+	)
+
+	clipboardShort := flag.Bool(
+		"c",
 		false,
 		"copy context to clipboard",
 	)
@@ -107,26 +121,54 @@ func main() {
 		"create context configuration files",
 	)
 
+	initShort := flag.Bool(
+		"i",
+		false,
+		"create context configuration files",
+	)
+
 	showVersion := flag.Bool(
 		"version",
 		false,
 		"show version",
 	)
 
-	flag.Parse()
+	versionShort := flag.Bool(
+		"v",
+		false,
+		"show version",
+	)
 
-	if *showVersion {
+	if err := flag.CommandLine.Parse(os.Args[1:]); err != nil {
+		if err == flag.ErrHelp {
+			return
+		}
+
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(2)
+	}
+
+	shouldClipboard := *clipboard || *clipboardShort
+	shouldInit := *initProject || *initShort
+	shouldShowVersion := *showVersion || *versionShort
+
+	if shouldShowVersion {
 		fmt.Println(version.String())
 		return
 	}
 
-	if *initProject {
+	if shouldInit {
 		if err := initializer.Initialize(); err != nil {
 			fmt.Println("Error initializing project:", err)
 			os.Exit(1)
 		}
-
 		return
+	}
+
+	outputPathValue := *outputPath
+
+	if *outputPathLong != cfg.Output {
+		outputPathValue = *outputPathLong
 	}
 
 	if *treeOnly && *filesOnly {
@@ -134,7 +176,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if *stdout && *clipboard {
+	if *stdout && shouldClipboard {
 		fmt.Println("Error: --stdout and --clipboard cannot be used together")
 		os.Exit(1)
 	}
@@ -158,7 +200,7 @@ func main() {
 
 	var spinner *progress.Spinner
 
-	if !*stdout && !*clipboard && progress.IsTerminal() {
+	if !*stdout && !shouldClipboard && progress.IsTerminal() {
 		spinner = progress.New(os.Stdout)
 		spinner.Start("Scanning files")
 	}
@@ -184,14 +226,14 @@ func main() {
 	case *stdout:
 		fmt.Print(string(data))
 
-	case *clipboard:
+	case shouldClipboard:
 		if err := output.CopyToClipboard(data); err != nil {
-			fmt.Println("Error copying to clipboard:", err)
+			fmt.Println("Error copying context to clipboard:", err)
 			os.Exit(1)
 		}
 
 	default:
-		if err := output.WriteFile(*outputPath, data); err != nil {
+		if err := output.WriteFile(outputPathValue, data); err != nil {
 			fmt.Println("Error writing output file:", err)
 			os.Exit(1)
 		}
@@ -201,14 +243,47 @@ func main() {
 		stats.Print(os.Stderr, result)
 	}
 
-	if !*stdout && !*clipboard {
+	if !*stdout && !shouldClipboard {
 		fmt.Printf("✓ %d files collected\n", len(result.Files))
-		fmt.Printf("✓ Context written to %s\n", *outputPath)
+		fmt.Printf("✓ Context written to %s\n", outputPathValue)
 	}
 
-	if *clipboard {
+	if shouldClipboard {
 		fmt.Println("✓ Context copied to clipboard")
 	}
+}
+
+func printHelp() {
+	fmt.Println(`context — Turn your codebase into AI-ready context.
+
+Usage:
+  context [options]
+
+Options:
+  -h, --help               Show this help message
+  -v, --version            Show version
+  -o, --output <file>      Output file path
+  -c, --clipboard          Copy context to clipboard
+      --stdout             Write context to stdout
+  -i, --init               Create context configuration files
+      --tree-only          Only generate the directory tree
+      --files-only         Only generate file contents
+      --stats               Show context statistics
+      --format <format>    Output format: txt, markdown, json
+      --max-file-size <s>  Maximum file size to include
+      --include-env        Include environment file contents
+      --exclude <patterns> Additional files or directories to exclude
+      --include <patterns> Files or directories to explicitly include
+      --no-ignore          Ignore the .contextignore file
+      --no-notes            Exclude project context notes
+
+Examples:
+  context
+  context -c
+  context -o project.txt
+  context --stdout
+  context --tree-only
+  context -i`)
 }
 
 func splitPatterns(value string) []string {
