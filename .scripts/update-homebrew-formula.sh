@@ -61,7 +61,7 @@ class Context < Formula
   desc "CLI for turning codebases into structured, AI-ready context"
   homepage "https://github.com/${OWNER}/${PROJECT}"
   version "${VERSION}"
-  license "MIT"
+  license "Apache-2.0"
 
   on_macos do
     if Hardware::CPU.arm?

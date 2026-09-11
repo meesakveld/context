@@ -15,7 +15,7 @@ A fast, lightweight CLI that turns your codebase into structured context for AI 
 [![GitHub Stars](https://img.shields.io/github/stars/meesakveld/context?style=flat-square)](https://github.com/meesakveld/context/stargazers)
 [![GitHub Downloads](https://img.shields.io/github/downloads/meesakveld/context/total?style=flat-square)](https://github.com/meesakveld/context/releases)
 [![Go](https://img.shields.io/badge/Go-1.27-00ADD8?style=flat-square\&logo=go)](https://go.dev/)
-[![License](https://img.shields.io/badge/license-MIT-black?style=flat-square)](LICENSE)
+[![License](https://img.shields.io/badge/license-Apache--2.0-black?style=flat-square)](LICENSE)
 
 </div>
 
