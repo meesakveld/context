@@ -38,6 +38,18 @@ archives:
 checksum:
   name_template: checksums.txt
 
+homebrew_casks:
+  - name: context
+
+    repository:
+      owner: meesakveld
+      name: homebrew-tap
+      token: "{{ .Env.TAP_GITHUB_TOKEN }}"
+
+    homepage: "https://github.com/meesakveld/context"
+    description: "CLI for turning codebases into structured, AI-ready context"
+    license: "MIT"
+
 release:
   github:
     owner: meesakveld
