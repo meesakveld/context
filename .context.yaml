@@ -1,0 +1,18 @@
+# Context configuration
+
+output: context.txt
+
+format: txt
+
+max_file_size: 1MB
+
+include_env: false
+
+tree_only: false
+files_only: false
+
+include_notes: true
+
+exclude: []
+
+include: []

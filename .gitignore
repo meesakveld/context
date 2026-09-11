@@ -1,0 +1,32 @@
+# Build output
+/context
+/context-*
+
+# Generated context
+context.txt
+
+# IDE
+.idea/
+.vscode/
+
+# macOS
+.DS_Store
+
+# Go
+*.exe
+*.test
+*.out
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Temporary files
+.tmp/
+.cache/
+
+# Go
+*.exe
+*.test
+*.out
