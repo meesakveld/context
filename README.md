@@ -1,6 +1,8 @@
 <div align="center">
 
-# context
+<img src="./.github/assets/logo.svg" style="max-width: 12rem" />
+
+<hr /><br />
 
 **Turn your codebase into AI-ready context.**
 
