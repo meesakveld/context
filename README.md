@@ -492,4 +492,4 @@ If you find a bug or have an idea for a feature, open an issue or submit a pull 
 
 ## License
 
-MIT © Mees Akveld
+Apache 2.0 © Mees Akveld
