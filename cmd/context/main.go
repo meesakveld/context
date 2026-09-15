@@ -127,6 +127,12 @@ func main() {
 		"create context configuration files",
 	)
 
+	installFinder := flag.Bool(
+		"install-finder",
+		false,
+		"install macOS Finder right-click context menu action",
+	)
+
 	showVersion := flag.Bool(
 		"version",
 		false,
@@ -160,6 +166,14 @@ func main() {
 	if shouldInit {
 		if err := initializer.Initialize(); err != nil {
 			fmt.Println("Error initializing project:", err)
+			os.Exit(1)
+		}
+		return
+	}
+
+	if *installFinder {
+		if err := initializer.InstallFinderIntegration(); err != nil {
+			fmt.Println("Error installing Finder integration:", err)
 			os.Exit(1)
 		}
 		return
@@ -266,16 +280,17 @@ Options:
   -c, --clipboard          Copy context to clipboard
       --stdout             Write context to stdout
   -i, --init               Create context configuration files
+      --install-finder     Install macOS Finder right-click action
       --tree-only          Only generate the directory tree
       --files-only         Only generate file contents
-      --stats               Show context statistics
+      --stats              Show context statistics
       --format <format>    Output format: txt, markdown, json
       --max-file-size <s>  Maximum file size to include
       --include-env        Include environment file contents
       --exclude <patterns> Additional files or directories to exclude
       --include <patterns> Files or directories to explicitly include
       --no-ignore          Ignore the .contextignore file
-      --no-notes            Exclude project context notes
+      --no-notes           Exclude project context notes
 
 Examples:
   context
@@ -283,7 +298,8 @@ Examples:
   context -o project.txt
   context --stdout
   context --tree-only
-  context -i`)
+  context -i
+  context --install-finder`)
 }
 
 func splitPatterns(value string) []string {

@@ -132,6 +132,7 @@ The goal is simple:
 * 📊 Context statistics
 * 🌳 Tree-only mode
 * 📄 Files-only mode
+* 🖲️ macOS Finder right-click quick action integration
 * 🔐 Safe handling of environment files
 * 🎨 Text, Markdown and JSON output
 * 💻 Cross-platform
@@ -152,13 +153,13 @@ brew install meesakveld/tap/context
 Make sure you have Go installed.
 
 ```bash
-go install github.com/meesakveld/context/cmd/context@latest
+go install [github.com/meesakveld/context/cmd/context@latest](https://github.com/meesakveld/context/cmd/context@latest)
 ```
 
 ### Build locally
 
 ```bash
-git clone https://github.com/meesakveld/context.git
+git clone [https://github.com/meesakveld/context.git](https://github.com/meesakveld/context.git)
 cd context
 
 go build -o context ./cmd/context
@@ -261,6 +262,16 @@ Limit the maximum size of individual files:
 ```bash
 context --max-file-size 500KB
 ```
+
+### macOS Finder Integration
+
+Enable a right-click context menu option in macOS Finder to generate and copy project context instantly:
+
+```bash
+context --install-finder
+```
+
+Once installed, right-click any folder in Finder, go to **Quick Actions**, and select **Generate AI Context**.
 
 ---
 
@@ -437,21 +448,22 @@ The generated context contains both the structure of your project and the conten
 
 ## Command reference
 
-| Command                     | Description                      |
-| --------------------------- | -------------------------------- |
-| `context`                   | Generate project context         |
-| `context -o file.txt`       | Write to a custom file           |
-| `context --clipboard`       | Copy context to clipboard        |
-| `context --stdout`          | Print context to stdout          |
-| `context --tree-only`       | Generate only the directory tree |
-| `context --files-only`      | Generate only file contents      |
-| `context --stats`           | Show context statistics          |
-| `context --format txt`      | Generate plain text              |
-| `context --format markdown` | Generate Markdown                |
-| `context --format json`     | Generate JSON                    |
-| `context --include-env`     | Include environment files        |
-| `context --init`            | Create project configuration     |
-| `context --version`         | Show version                     |
+| Command | Description |
+| --- | --- |
+| `context` | Generate project context |
+| `context -o file.txt` | Write to a custom file |
+| `context --clipboard` | Copy context to clipboard |
+| `context --stdout` | Print context to stdout |
+| `context --tree-only` | Generate only the directory tree |
+| `context --files-only` | Generate only file contents |
+| `context --stats` | Show context statistics |
+| `context --format txt` | Generate plain text |
+| `context --format markdown` | Generate Markdown |
+| `context --format json` | Generate JSON |
+| `context --include-env` | Include environment files |
+| `context --init` | Create project configuration |
+| `context --install-finder` | Install macOS Finder right-click |
+| `context --version` | Show version |
 
 ---
 
@@ -460,7 +472,7 @@ The generated context contains both the structure of your project and the conten
 Clone the repository:
 
 ```bash
-git clone https://github.com/meesakveld/context.git
+git clone [https://github.com/meesakveld/context.git](https://github.com/meesakveld/context.git)
 cd context
 ```
 
