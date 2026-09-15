@@ -85,7 +85,13 @@ func main() {
 		"exclude project context notes",
 	)
 
-	format := flag.String(
+	formatShort := flag.String(
+		"f",
+		cfg.Format,
+		"output format: txt, markdown, json",
+	)
+
+	formatLong := flag.String(
 		"format",
 		cfg.Format,
 		"output format: txt, markdown, json",
@@ -127,12 +133,6 @@ func main() {
 		"create context configuration files",
 	)
 
-	installFinder := flag.Bool(
-		"install-finder",
-		false,
-		"install macOS Finder right-click context menu action",
-	)
-
 	showVersion := flag.Bool(
 		"version",
 		false,
@@ -171,18 +171,15 @@ func main() {
 		return
 	}
 
-	if *installFinder {
-		if err := initializer.InstallFinderIntegration(); err != nil {
-			fmt.Println("Error installing Finder integration:", err)
-			os.Exit(1)
-		}
-		return
-	}
-
 	outputPathValue := *outputPath
 
 	if *outputPathLong != cfg.Output {
 		outputPathValue = *outputPathLong
+	}
+
+	formatValue := *formatShort
+	if *formatLong != cfg.Format {
+		formatValue = *formatLong
 	}
 
 	if *treeOnly && *filesOnly {
@@ -230,7 +227,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	data, err := formatter.Format(result, *format)
+	data, err := formatter.Format(result, formatValue)
 	if err != nil {
 		fmt.Println("Error formatting context:", err)
 		os.Exit(1)
@@ -280,11 +277,10 @@ Options:
   -c, --clipboard          Copy context to clipboard
       --stdout             Write context to stdout
   -i, --init               Create context configuration files
-      --install-finder     Install macOS Finder right-click action
       --tree-only          Only generate the directory tree
       --files-only         Only generate file contents
       --stats              Show context statistics
-      --format <format>    Output format: txt, markdown, json
+  -f, --format <format>    Output format: txt, markdown, json
       --max-file-size <s>  Maximum file size to include
       --include-env        Include environment file contents
       --exclude <patterns> Additional files or directories to exclude
@@ -296,10 +292,10 @@ Examples:
   context
   context -c
   context -o project.txt
+  context -f markdown
   context --stdout
   context --tree-only
-  context -i
-  context --install-finder`)
+  context -i`)
 }
 
 func splitPatterns(value string) []string {

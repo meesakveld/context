@@ -263,16 +263,6 @@ Limit the maximum size of individual files:
 context --max-file-size 500KB
 ```
 
-### macOS Finder Integration
-
-Enable a right-click context menu option in macOS Finder to generate and copy project context instantly:
-
-```bash
-context --install-finder
-```
-
-Once installed, right-click any folder in Finder, go to **Quick Actions**, and select **Generate AI Context**.
-
 ---
 
 ## Configuration
