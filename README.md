@@ -134,7 +134,7 @@ The goal is simple:
 * 📄 Files-only mode
 * 🖲️ macOS Finder right-click quick action integration
 * 🔐 Safe handling of environment files
-* 🎨 Text, Markdown and JSON output
+* 🎨 Text, Markdown (`.md`), JSON (`.json`) and ZIP (`.zip`) output formats
 * 💻 Cross-platform
 * 🪶 Single binary with no runtime required
 
@@ -235,24 +235,36 @@ Write the generated context to a custom file:
 context -o project-context.txt
 ```
 
-### Output formats
+### Output formats & Automatic Extensions
 
-Generate plain text:
+`context` supports multiple output formats. When no custom output path is provided, the tool automatically selects the correct default file extension based on the chosen format:
+
+Generate plain text (`context.txt`):
 
 ```bash
 context --format txt
 ```
 
-Generate Markdown:
+Generate Markdown (`context.md`):
 
 ```bash
 context --format markdown
+# or short flag:
+context -f md
 ```
 
-Generate JSON:
+Generate JSON (`context.json`):
 
 ```bash
 context --format json
+```
+
+Generate a filtered ZIP archive (`context.zip`) that respects all ignore rules and filters:
+
+```bash
+context --format zip
+# or short flag:
+context -f zip
 ```
 
 ### File size limit
@@ -429,7 +441,7 @@ Collect file contents
 Format output
    │
    ▼
-context.txt
+context.txt / context.md / context.json / context.zip
 ```
 
 The generated context contains both the structure of your project and the contents of relevant files, making it easier for AI tools to understand how your project is organised.
@@ -447,9 +459,10 @@ The generated context contains both the structure of your project and the conten
 | `context --tree-only` | Generate only the directory tree |
 | `context --files-only` | Generate only file contents |
 | `context --stats` | Show context statistics |
-| `context --format txt` | Generate plain text |
-| `context --format markdown` | Generate Markdown |
-| `context --format json` | Generate JSON |
+| `context --format txt` | Generate plain text (`context.txt`) |
+| `context --format markdown` | Generate Markdown (`context.md`) |
+| `context --format json` | Generate JSON (`context.json`) |
+| `context --format zip` | Generate a filtered ZIP archive (`context.zip`) |
 | `context --include-env` | Include environment files |
 | `context --init` | Create project configuration |
 | `context --install-finder` | Install macOS Finder right-click |
