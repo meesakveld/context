@@ -22,9 +22,12 @@ func Format(
 	case "json":
 		return formatJSON(result)
 
+	case "zip":
+		return nil, fmt.Errorf("zip format is handled directly as an archive output")
+
 	default:
 		return nil, fmt.Errorf(
-			"unsupported format %q; supported formats are txt, markdown, json",
+			"unsupported format %q; supported formats are txt, markdown, md, json, zip",
 			format,
 		)
 	}

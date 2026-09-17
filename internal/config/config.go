@@ -2,7 +2,7 @@ package config
 
 import (
 	"os"
-
+	"strings"
 	"gopkg.in/yaml.v3"
 )
 
@@ -47,4 +47,17 @@ func Load() (Config, error) {
 	}
 
 	return cfg, nil
+}
+
+func DefaultOutputForFormat(format string) string {
+	switch strings.ToLower(format) {
+	case "markdown", "md":
+		return "context.md"
+	case "json":
+		return "context.json"
+	case "zip":
+		return "context.zip"
+	default:
+		return "context.txt"
+	}
 }

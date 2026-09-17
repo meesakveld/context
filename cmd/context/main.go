@@ -27,13 +27,13 @@ func main() {
 
 	outputPath := flag.String(
 		"o",
-		cfg.Output,
+		"",
 		"output file path",
 	)
 
 	outputPathLong := flag.String(
 		"output",
-		cfg.Output,
+		"",
 		"output file path",
 	)
 
@@ -88,13 +88,13 @@ func main() {
 	formatShort := flag.String(
 		"f",
 		cfg.Format,
-		"output format: txt, markdown, json",
+		"output format: txt, markdown, md, json, zip",
 	)
 
 	formatLong := flag.String(
 		"format",
 		cfg.Format,
-		"output format: txt, markdown, json",
+		"output format: txt, markdown, md, json, zip",
 	)
 
 	maxFileSize := flag.String(
@@ -171,15 +171,24 @@ func main() {
 		return
 	}
 
-	outputPathValue := *outputPath
-
-	if *outputPathLong != cfg.Output {
-		outputPathValue = *outputPathLong
+	formatValue := cfg.Format
+	if *formatShort != cfg.Format {
+		formatValue = *formatShort
 	}
-
-	formatValue := *formatShort
 	if *formatLong != cfg.Format {
 		formatValue = *formatLong
+	}
+
+	// Bepaal output pad: expliciet opgegeven via -o/--output, anders automatisch op basis van format
+	outputPathValue := cfg.Output
+	if *outputPath != "" {
+		outputPathValue = *outputPath
+	} else if *outputPathLong != "" {
+		outputPathValue = *outputPathLong
+	} else {
+		if cfg.Output == "context.txt" || cfg.Output == "" {
+			outputPathValue = config.DefaultOutputForFormat(formatValue)
+		}
 	}
 
 	if *treeOnly && *filesOnly {
@@ -189,6 +198,11 @@ func main() {
 
 	if *stdout && shouldClipboard {
 		fmt.Println("Error: --stdout and --clipboard cannot be used together")
+		os.Exit(1)
+	}
+
+	if strings.ToLower(formatValue) == "zip" && (*stdout || shouldClipboard) {
+		fmt.Println("Error: --stdout and --clipboard are not supported for zip format")
 		os.Exit(1)
 	}
 
@@ -227,26 +241,33 @@ func main() {
 		os.Exit(1)
 	}
 
-	data, err := formatter.Format(result, formatValue)
-	if err != nil {
-		fmt.Println("Error formatting context:", err)
-		os.Exit(1)
-	}
-
-	switch {
-	case *stdout:
-		fmt.Print(string(data))
-
-	case shouldClipboard:
-		if err := output.CopyToClipboard(data); err != nil {
-			fmt.Println("Error copying context to clipboard:", err)
+	if strings.ToLower(formatValue) == "zip" {
+		if err := output.WriteZip(outputPathValue, result); err != nil {
+			fmt.Println("Error writing zip archive:", err)
+			os.Exit(1)
+		}
+	} else {
+		data, err := formatter.Format(result, formatValue)
+		if err != nil {
+			fmt.Println("Error formatting context:", err)
 			os.Exit(1)
 		}
 
-	default:
-		if err := output.WriteFile(outputPathValue, data); err != nil {
-			fmt.Println("Error writing output file:", err)
-			os.Exit(1)
+		switch {
+		case *stdout:
+			fmt.Print(string(data))
+
+		case shouldClipboard:
+			if err := output.CopyToClipboard(data); err != nil {
+				fmt.Println("Error copying context to clipboard:", err)
+				os.Exit(1)
+			}
+
+		default:
+			if err := output.WriteFile(outputPathValue, data); err != nil {
+				fmt.Println("Error writing output file:", err)
+				os.Exit(1)
+			}
 		}
 	}
 
@@ -256,7 +277,11 @@ func main() {
 
 	if !*stdout && !shouldClipboard {
 		fmt.Printf("✓ %d files collected\n", len(result.Files))
-		fmt.Printf("✓ Context written to %s\n", outputPathValue)
+		if strings.ToLower(formatValue) == "zip" {
+			fmt.Printf("✓ Context archive written to %s\n", outputPathValue)
+		} else {
+			fmt.Printf("✓ Context written to %s\n", outputPathValue)
+		}
 	}
 
 	if shouldClipboard {
@@ -280,7 +305,7 @@ Options:
       --tree-only          Only generate the directory tree
       --files-only         Only generate file contents
       --stats              Show context statistics
-  -f, --format <format>    Output format: txt, markdown, json
+  -f, --format <format>    Output format: txt, markdown, md, json, zip
       --max-file-size <s>  Maximum file size to include
       --include-env        Include environment file contents
       --exclude <patterns> Additional files or directories to exclude
@@ -293,6 +318,8 @@ Examples:
   context -c
   context -o project.txt
   context -f markdown
+  context -f json
+  context -f zip
   context --stdout
   context --tree-only
   context -i`)
